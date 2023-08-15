@@ -1,0 +1,17 @@
+#vector_vars
+vector_url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-1.x86_64.rpm"
+vector_version: 0.31.0
+vector_config_dir: "/etc/vector"
+vector_config:
+  sources:
+    example_logs:
+      type: demo_logs
+      format: syslog
+  sinks:
+    to_clickhouse:
+      type: clickhouse
+      inputs:
+        - example_logs
+      database: test123
+      endpoint: http://84.201.129.38:8123
+      table: table1
