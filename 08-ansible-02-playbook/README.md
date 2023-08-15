@@ -223,4 +223,4 @@ vector-01                  : ok=4    changed=0    unreachable=0    failed=0    s
 
 #### 9. Подготовьте README.md-файл по своему playbook. В нём должно быть описано: что делает playbook, какие у него есть параметры и теги. Пример качественной документации ansible playbook по [ссылке](https://github.com/opensearch-project/ansible-playbook).
 
-
+<https://github.com/geon071/net_virt3/releases/tag/08-ansible-02-playbook>
