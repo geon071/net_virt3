@@ -44,3 +44,4 @@ Filebeat следует сконфигурировать для отправки
 ![alt text](img/elk1.png "elk3")
 
 ![alt text](img/elk2.png "elk4")
+
