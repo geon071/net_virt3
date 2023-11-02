@@ -26,9 +26,9 @@ Filebeat следует сконфигурировать для отправки
 
 ### Ответ
 
-![alt text](img/elk1.png "elk1")
+![alt text](img/elk1.PNG "elk1")
 
-![alt text](img/elk2.png "elk2")
+![alt text](img/elk2.PNG "elk2")
 
 <details>
   <summary>Задание 2</summary>
@@ -41,7 +41,7 @@ Filebeat следует сконфигурировать для отправки
 
 ### Ответ
 
-![alt text](img/elk1.png "elk3")
+![alt text](img/elk1.PNG "elk3")
 
-![alt text](img/elk2.png "elk4")
+![alt text](img/elk2.PNG "elk4")
 
