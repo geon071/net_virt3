@@ -1,9 +1,10 @@
-## Плейбук установки Clickhouse, Vector
+## Плейбук установки Clickhouse, Vector, Lighthouse
 
 Данный плейбук позволяет установить следующие программные продукты
 
 - Clickhouse (<https://clickhouse.com/>)
 - Vector (<https://vector.dev/>)
+- Lighthouse (<https://github.com/VKCOM/lighthouse.git>)
 
 ### Пререквизиты
 
@@ -26,6 +27,12 @@
   - vector_config_dir: директория расположения файлов конфигурации Vector (Пример: "/etc/vector")
   - vector_config: описание конфигурации Vector в формате yaml
 
+- `\group_vars\lighthouse\vars.yml` файл конфигурации для Lighthouse
+
+  - lighthouse_repo: ссылка для скачивания репозитория Lighthouse (Пример: "https://github.com/VKCOM/lighthouse.git")
+  - lighthouse_dest: директория кууда склонировать репозитория, указанный в lighthouse_repo (Пример: "/opt/nginx/www")
+  - nginx_user: пользователь под каким выполнить запуск процесса веб-сервера Nginx
+
 В файле `inventory\prod.yml` можно сконфигурировать на какие узлы производить установку продуктов. Приведен пример подключения через SSH.
 
 ### Запуск установки
@@ -35,4 +42,4 @@
 
 your_key.pem - приватный SSH ключ для подключения к узлам указанным в файле `inventory\prod.yml`
 
-По окончании будет произведена установка программных продуктов Clickhouse и Vector, конфигурация их, согласно параметрам.  
+По окончании будет произведена установка программных продуктов Clickhouse, Vector и Lighthouse+Nginx, конфигурация их, согласно параметрам.  
