@@ -422,4 +422,8 @@ vector-01                  : ok=4    changed=0    unreachable=0    failed=0    s
 
 #### 9. Подготовьте README.md-файл по своему playbook. В нём должно быть описано: что делает playbook, какие у него есть параметры и теги.
 
+[Readme к playbook](https://github.com/geon071/net_virt3/blob/main/08-ansible-03-yandex/playbook/README.md)
+
 #### 10. Готовый playbook выложите в свой репозиторий, поставьте тег `08-ansible-03-yandex` на фиксирующий коммит, в ответ предоставьте ссылку на него.
+
+[К тегу 08-ansible-03-yandex](https://github.com/geon071/net_virt3/releases/tag/08-ansible-03-yandex)
