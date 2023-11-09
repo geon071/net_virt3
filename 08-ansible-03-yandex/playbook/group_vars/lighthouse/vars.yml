@@ -1,0 +1,3 @@
+lighthouse_repo: "https://github.com/VKCOM/lighthouse.git"
+lighthouse_dest: "/opt/nginx/www"
+nginx_user: "centos"
