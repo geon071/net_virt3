@@ -165,34 +165,6 @@ Commercial support is available at
 
 ### 1. Создать Deployment приложения nginx и обеспечить старт контейнера только после того, как будет запущен сервис этого приложения.
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: read-nginx
-  labels:
-    app: r_nginx
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: r_nginx
-  template:
-    metadata:
-      labels:
-        app: r_nginx
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:1.14.2
-        ports:
-        - containerPort: 80
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 80
-```
-
 ### 2. Убедиться, что nginx не стартует. В качестве Init-контейнера взять busybox.
 
 ```yaml
