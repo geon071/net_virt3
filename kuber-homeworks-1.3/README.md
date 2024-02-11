@@ -149,5 +149,194 @@ Commercial support is available at
 </body>
 </html>
 * Connection #0 to host sr-nginx-deployment left intact
-/ # 
+```
+
+<details>
+  <summary><b>Задание 2. Создать Deployment и обеспечить старт основного контейнера при выполнении условий</b></summary>
+
+1. Создать Deployment приложения nginx и обеспечить старт контейнера только после того, как будет запущен сервис этого приложения.
+2. Убедиться, что nginx не стартует. В качестве Init-контейнера взять busybox.
+3. Создать и запустить Service. Убедиться, что Init запустился.
+4. Продемонстрировать состояние пода до и после запуска сервиса.
+
+</details>
+
+## Ответ
+
+### 1. Создать Deployment приложения nginx и обеспечить старт контейнера только после того, как будет запущен сервис этого приложения.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: read-nginx
+  labels:
+    app: r_nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: r_nginx
+  template:
+    metadata:
+      labels:
+        app: r_nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+```
+
+### 2. Убедиться, что nginx не стартует. В качестве Init-контейнера взять busybox.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: read-nginx
+  labels:
+    app: r_nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: r_nginx
+  template:
+    metadata:
+      labels:
+        app: r_nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+      initContainers:
+      - name: init-web
+        image: busybox:1.28
+        command: ['sh', '-c', "until nslookup webservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+```
+
+```bash
+PS D:\VM\Netology_vagrant\k8s_yamls> .\kubectl get pod
+NAME                               READY   STATUS     RESTARTS      AGE
+nginx-deployment-67b6fff8f-vz5zk   2/2     Running    2 (21m ago)   18h
+nginx-deployment-67b6fff8f-6zljb   2/2     Running    2 (21m ago)   18h
+pd-multic                          1/1     Running    1 (21m ago)   18h
+read-nginx-d9999b84-c55ng          0/1     Init:0/1   0             99s
+```
+
+```bash
+PS D:\VM\Netology_vagrant\k8s_yamls> .\kubectl describe pod read-nginx-d9999b84-c55ng
+Name:             read-nginx-d9999b84-c55ng
+Namespace:        default
+...
+Init Containers:
+  init-web:
+    Container ID:  containerd://e7d9dab5e28d9b757d7e7dd00ca1c5d9def5c8b64c78070fb7ef5ac792300942
+    Image:         busybox:1.28
+    Image ID:      docker.io/library/busybox@sha256:141c253bc4c3fd0a201d32dc1f493bcf3fff003b6df416dea4f41046e0f37d47
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      until nslookup webservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done
+    State:          Running
+      Started:      Sun, 11 Feb 2024 12:15:19 +0300
+...
+Containers:
+  nginx:
+    Container ID:
+    Image:          nginx:1.14.2
+    Image ID:
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       PodInitializing
+    Ready:          False
+    Restart Count:  0
+    Readiness:      http-get http://:80/ delay=0s timeout=1s period=10s #success=1 #failure=3
+...
+```
+
+### 3. Создать и запустить Service. Убедиться, что Init запустился.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: webservice
+spec:
+  selector:
+    app: r_nginx
+  ports:
+    - protocol: TCP
+      name: tcp
+      port: 80
+      targetPort: 80
+```
+
+```bash
+PS D:\VM\Netology_vagrant\k8s_yamls> .\kubectl get pod
+NAME                               READY   STATUS    RESTARTS      AGE
+nginx-deployment-67b6fff8f-vz5zk   2/2     Running   2 (25m ago)   19h
+nginx-deployment-67b6fff8f-6zljb   2/2     Running   2 (25m ago)   18h
+pd-multic                          1/1     Running   1 (25m ago)   18h
+read-nginx-d9999b84-c55ng          1/1     Running   0             5m28s
+```
+
+### 4. Продемонстрировать состояние пода до и после запуска сервиса.
+
+```bash
+PS D:\VM\Netology_vagrant\k8s_yamls> .\kubectl describe pod read-nginx-d9999b84-c55ng
+Name:             read-nginx-d9999b84-c55ng
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             first/10.0.2.15
+Start Time:       Sun, 11 Feb 2024 12:14:57 +0300
+Labels:           app=r_nginx
+...
+Init Containers:
+  init-web:
+    Container ID:  containerd://e7d9dab5e28d9b757d7e7dd00ca1c5d9def5c8b64c78070fb7ef5ac792300942
+    Image:         busybox:1.28
+    Image ID:      docker.io/library/busybox@sha256:141c253bc4c3fd0a201d32dc1f493bcf3fff003b6df416dea4f41046e0f37d47
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      until nslookup webservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Sun, 11 Feb 2024 12:15:19 +0300
+      Finished:     Sun, 11 Feb 2024 12:20:03 +0300
+...
+Containers:
+  nginx:
+    Container ID:   containerd://d1295dba2da440a1ef97a7c91cfd7c690c41f78ae48890d13bfd9909d87d646d
+    Image:          nginx:1.14.2
+    Image ID:       docker.io/library/nginx@sha256:f7988fb6c02e0ce69257d9bd9cf37ae20a60f1df7563c3a2a6abe24160306b8d
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Sun, 11 Feb 2024 12:20:12 +0300
+    Ready:          True
+    Restart Count:  0
+    Readiness:      http-get http://:80/ delay=0s timeout=1s period=10s #success=1 #failure=3
+    Environment:    <none>
+...
 ```
